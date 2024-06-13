@@ -41,7 +41,7 @@ class Meme(Base, CRUDMixin):
     )
 
     @validates('image_url')
-    def validate_opendota_link(self, key, value):
+    def validate_image_link(self, key, value):
         '''Validate link to http://host.domain/image.ext format'''
         if not validate_link(value):
             return ValueError("Provided incorrect image_url (http://host.domain/image.ext)")
