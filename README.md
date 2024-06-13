@@ -8,7 +8,7 @@ ___
 
 ***Завершен v0.0.1 &#10003;***
 
-![There's a pic](https://raw.githubusercontent.com/Segfaul/madsoft_testovoe/master/frontend/src/assets/meme_service_web.png?token=GHSAT0AAAAAACSZTWZ6RSZZXUZTOTKTJTPKZTKNZFQ)
+![There's a pic](frontend/src/assets/meme_service_web.png)
 ___
 ## Функциональность
 #### Private API
