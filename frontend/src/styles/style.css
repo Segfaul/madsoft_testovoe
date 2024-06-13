@@ -1,0 +1,42 @@
+.App {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+  
+ul {
+  list-style: none;
+  padding: 0;
+}
+  
+li {
+  margin-bottom: 20px;
+}
+  
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: #fff;
+  text-decoration: underline;
+  font-size: 1.3em;
+  padding: 20px;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+input {
+  padding: 5px;
+}
+
+.nav-menu {
+  border: 1px solid #fff;
+  margin: 20px 0px;
+}
+  

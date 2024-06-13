@@ -1,0 +1,101 @@
+version: '3.9'
+name: memes_app_dev
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - memes-dev
+  
+
+  private_api:
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile
+    command:  bash -c 'uvicorn backend.private_api.main:app --reload --log-config backend/public_api/config/log.ini --host 0.0.0.0 --port 8001'
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./backend/private_api:/madsoft_testovoe/backend/private_api
+      - ./logs-data:/madsoft_testovoe/logs
+    environment:
+      - MINIO_URL=http://minio:9000
+      - REDIS_URL=redis://redis:6379/
+      - LOG_FILE_PATH=logs/memes.log
+    depends_on:
+      - "redis"
+      - "minio"
+    networks:
+      - memes-dev
+
+  public_api:
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile
+    command:  bash -c 'while !</dev/tcp/postgres/5432; do sleep 1; done;
+      alembic -c backend/public_api/alembic.ini upgrade head;
+      uvicorn backend.public_api.main:app --reload --log-config backend/public_api/config/log.ini --host 0.0.0.0 --port 8000'
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/public_api:/madsoft_testovoe/backend/public_api
+      - ./logs-data:/madsoft_testovoe/logs
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_URL=redis://redis:6379/
+      - LOG_FILE_PATH=logs/memes.log
+    depends_on:
+      - "redis"
+      - "postgres"
+      - "private_api"
+    networks:
+      - memes-dev
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - memes-dev
+  
+  minio:
+    image: minio/minio
+    command: server /data
+    env_file:
+      - .env
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET}
+    volumes:
+      - ./minio-data:/data
+    ports:
+      - "9000:9000"
+    networks:
+      - memes-dev
+
+  frontend:
+    build:
+      context: ./
+      dockerfile: ./frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    command:  bash -c 'npm run dev -- --host'
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+    networks:
+      - memes-dev
+
+networks:
+  memes-dev:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  minio-data:
+  logs-data:
