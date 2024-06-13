@@ -36,6 +36,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Copy .env to backend/.env
+      run: |
+        cp .env backend/.env
+
     - name: Run tests for public_api
       run: |
         pytest public_api/
